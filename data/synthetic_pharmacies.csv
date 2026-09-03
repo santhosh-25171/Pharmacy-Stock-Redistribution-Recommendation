@@ -1,0 +1,19 @@
+pharmacy_id,pharmacy_name,city,latitude,longitude,storage_capacity,operating_status
+PHARM-001,Apollo Central Hub,Bengaluru,12.9716,77.5946,15000,ACTIVE
+PHARM-002,MedPlus Indiranagar,Bengaluru,12.9784,77.6408,8000,ACTIVE
+PHARM-003,Fortis Care Pharmacy,Bengaluru,12.9352,77.6245,10000,ACTIVE
+PHARM-004,Manipal Health Dispensary,Bengaluru,12.9915,77.5712,12000,ACTIVE
+PHARM-005,TrustMed Koramangala,Bengaluru,12.9279,77.6271,6500,ACTIVE
+PHARM-006,Aster CMI Pharmacy,Bengaluru,13.0601,77.5925,9000,ACTIVE
+PHARM-007,Whitefield Wellness Chemist,Bengaluru,12.9698,77.75,7500,ACTIVE
+PHARM-008,Columbia Care Clinic Pharmacy,Bengaluru,13.0112,77.555,8500,ACTIVE
+PHARM-009,Electronic City MedStore,Bengaluru,12.8452,77.6602,7000,ACTIVE
+PHARM-010,Yelahanka Suburban Care,Bengaluru,13.1007,77.5963,5500,ACTIVE
+PHARM-011,Narayana Health Point,Bengaluru,12.809,77.6947,11000,ACTIVE
+PHARM-012,Malleshwaram Life Pharmacy,Bengaluru,13.0031,77.5643,6000,ACTIVE
+PHARM-013,Jayanagar Community Chemist,Bengaluru,12.925,77.5838,7200,ACTIVE
+PHARM-014,Hebbal Rapid Meds,Bengaluru,13.0358,77.597,6800,ACTIVE
+PHARM-015,HSR Layout QuickPharma,Bengaluru,12.9121,77.6446,8200,ACTIVE
+PHARM-016,BTM Layout PharmaCare,Bengaluru,12.9166,77.6101,5000,ACTIVE
+PHARM-017,Rajajinagar Health Haven,Bengaluru,12.9982,77.553,4500,MAINTENANCE
+PHARM-018,Peenya Industrial Dispensary,Bengaluru,13.0285,77.5197,4000,CLOSED

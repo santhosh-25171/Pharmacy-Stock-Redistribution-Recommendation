@@ -1,0 +1,52 @@
+{
+  "model_type": "RandomForestRegressor",
+  "n_estimators": 100,
+  "train_samples": 816,
+  "test_samples": 204,
+  "mae": 1.2152,
+  "rmse": 3.517,
+  "r2_score": 0.7523,
+  "top_features": [
+    {
+      "feature": "monthly_avg_daily",
+      "importance": 0.505
+    },
+    {
+      "feature": "weekly_avg_daily",
+      "importance": 0.4162
+    },
+    {
+      "feature": "historical_avg_daily",
+      "importance": 0.0297
+    },
+    {
+      "feature": "unit_price",
+      "importance": 0.0232
+    },
+    {
+      "feature": "storage_capacity",
+      "importance": 0.0101
+    },
+    {
+      "feature": "demand_volatility",
+      "importance": 0.0035
+    },
+    {
+      "feature": "demand_trend_DECREASING",
+      "importance": 0.0033
+    },
+    {
+      "feature": "demand_trend_INCREASING",
+      "importance": 0.0024
+    },
+    {
+      "feature": "category_Critical Care",
+      "importance": 0.0019
+    },
+    {
+      "feature": "category_Antibiotic",
+      "importance": 0.0012
+    }
+  ],
+  "trained_at": "2026-08-14T10:00:00Z"
+}

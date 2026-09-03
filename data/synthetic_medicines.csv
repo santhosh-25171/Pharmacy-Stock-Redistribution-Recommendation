@@ -1,0 +1,61 @@
+medicine_id,name,category,unit_price,is_critical,storage_type
+MED-001,Paracetamol 650mg,Analgesic,32.5,False,Room Temperature
+MED-002,Amoxicillin + Clavulanate 625mg,Antibiotic,185.0,True,Room Temperature
+MED-003,Azithromycin 500mg,Antibiotic,120.0,True,Room Temperature
+MED-004,Metformin 500mg SR,Antidiabetic,45.0,False,Room Temperature
+MED-005,Human Regular Insulin 100IU,Antidiabetic,350.0,True,Cold Chain 2-8C
+MED-006,Atorvastatin 20mg,Cardiovascular,95.0,True,Room Temperature
+MED-007,Telmisartan 40mg,Cardiovascular,78.0,True,Room Temperature
+MED-008,Amlodipine 5mg,Cardiovascular,38.0,False,Room Temperature
+MED-009,Pantoprazole 40mg,Gastrointestinal,85.0,False,Room Temperature
+MED-010,Omeprazole 20mg,Gastrointestinal,55.0,False,Room Temperature
+MED-011,Cefixime 200mg,Antibiotic,140.0,True,Room Temperature
+MED-012,Ciprofloxacin 500mg,Antibiotic,65.0,False,Room Temperature
+MED-013,Montelukast + Levocetirizine,Respiratory,115.0,False,Room Temperature
+MED-014,Salbutamol Inhaler 100mcg,Respiratory,160.0,True,Room Temperature
+MED-015,Budesonide Inhaler 200mcg,Respiratory,280.0,True,Room Temperature
+MED-016,Ibuprofen 400mg,Analgesic,28.0,False,Room Temperature
+MED-017,Tramadol 50mg,Analgesic,90.0,True,Controlled Substance
+MED-018,Enoxaparin 40mg Injection,Cardiovascular,450.0,True,Cold Chain 2-8C
+MED-019,Meropenem 1g Injection,Antibiotic,850.0,True,Room Temperature
+MED-020,Piperacillin + Tazobactam 4.5g,Antibiotic,490.0,True,Room Temperature
+MED-021,Losartan 50mg,Cardiovascular,62.0,False,Room Temperature
+MED-022,Glimepiride 2mg,Antidiabetic,52.0,False,Room Temperature
+MED-023,Vildagliptin 50mg,Antidiabetic,175.0,True,Room Temperature
+MED-024,Dapagliflozin 10mg,Antidiabetic,220.0,True,Room Temperature
+MED-025,Rosuvastatin 10mg,Cardiovascular,110.0,True,Room Temperature
+MED-026,Clopidogrel 75mg,Cardiovascular,88.0,True,Room Temperature
+MED-027,Aspirin 75mg Gastro-resistant,Cardiovascular,22.0,False,Room Temperature
+MED-028,Ondansetron 4mg,Gastrointestinal,42.0,False,Room Temperature
+MED-029,Rabeprazole 20mg,Gastrointestinal,75.0,False,Room Temperature
+MED-030,Doxycycline 100mg,Antibiotic,68.0,False,Room Temperature
+MED-031,Levofloxacin 500mg,Antibiotic,95.0,True,Room Temperature
+MED-032,Linezolid 600mg,Antibiotic,340.0,True,Room Temperature
+MED-033,Vancomycin 500mg Injection,Antibiotic,420.0,True,Room Temperature
+MED-034,Methylprednisolone 16mg,Steroid,110.0,True,Room Temperature
+MED-035,Dexamethasone 4mg Injection,Steroid,25.0,True,Room Temperature
+MED-036,Prednisolone 10mg,Steroid,30.0,False,Room Temperature
+MED-037,Cetirizine 10mg,Antihistamine,20.0,False,Room Temperature
+MED-038,Fexofenadine 120mg,Antihistamine,82.0,False,Room Temperature
+MED-039,Hydrochlorothiazide 12.5mg,Cardiovascular,24.0,False,Room Temperature
+MED-040,Spironolactone 25mg,Cardiovascular,48.0,False,Room Temperature
+MED-041,Alprazolam 0.5mg,Psychiatric,35.0,False,Controlled Substance
+MED-042,Escitalopram 10mg,Psychiatric,85.0,False,Room Temperature
+MED-043,Sertraline 50mg,Psychiatric,105.0,False,Room Temperature
+MED-044,Thyroxine Sodium 50mcg,Endocrine,125.0,True,Room Temperature
+MED-045,Calcium 500mg + Vitamin D3,Nutritional,65.0,False,Room Temperature
+MED-046,Vitamin B-Complex + B12,Nutritional,40.0,False,Room Temperature
+MED-047,Iron + Folic Acid Tablets,Nutritional,50.0,False,Room Temperature
+MED-048,Diclofenac Sodium 50mg,Analgesic,30.0,False,Room Temperature
+MED-049,Aceclofenac + Paracetamol,Analgesic,60.0,False,Room Temperature
+MED-050,Loperamide 2mg,Gastrointestinal,18.0,False,Room Temperature
+MED-051,Metronidazole 400mg,Antibiotic,32.0,False,Room Temperature
+MED-052,Fluconazole 150mg,Antifungal,45.0,False,Room Temperature
+MED-053,Itraconazole 100mg,Antifungal,165.0,True,Room Temperature
+MED-054,Ranitidine 150mg,Gastrointestinal,25.0,False,Room Temperature
+MED-055,Betamethasone 0.5mg,Steroid,15.0,False,Room Temperature
+MED-056,Bisoprolol 2.5mg,Cardiovascular,72.0,False,Room Temperature
+MED-057,Carvedilol 6.25mg,Cardiovascular,54.0,False,Room Temperature
+MED-058,Sitagliptin 100mg,Antidiabetic,240.0,True,Room Temperature
+MED-059,Empagliflozin 25mg,Antidiabetic,290.0,True,Room Temperature
+MED-060,Albumin Human 20% 100ml,Critical Care,3200.0,True,Cold Chain 2-8C
