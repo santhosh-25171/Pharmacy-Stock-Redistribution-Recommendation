@@ -21,10 +21,10 @@ To evaluate the economic and operational performance of the Expiry-Aware Redistr
 |---|---|---|---|
 | **Average Value Protected** | **₹75,70,344.23** | **₹83,14,345.38** | **+₹7,44,001.15 (+9.88%)** |
 | **Average Value Lost to Expiry** | ₹14,28,450.00 | ₹6,84,448.85 | **-₹7,44,001.15 (-52.09% loss reduction)** |
-| **Transfer Acceptance Rate** | N/A (0 transfers) | 93.03% | High operational alignment |
-| **Average Transit Distance** | N/A | 14.82 km | Localized urban logistics |
-| **Average Shelf-Life at Transfer** | N/A | 19.45 days | Safe buffer before expiration |
-| **Total Evaluated Recommendations** | 0 | 1,420 recommendations | Full network coverage |
+| **Transfer Acceptance Rate** | N/A (0 transfers) | 93.03% | Simulation-based acceptance behavior |
+| **Average Transit Distance** | N/A | 10.27 km | Localized urban logistics (Haversine) |
+| **Average Shelf-Life at Transfer** | N/A | 19.41 days | Safe buffer before expiration |
+| **Total Evaluated Recommendations** | 0 | 1,794 recommendations | Full network coverage across 30 cycles |
 
 ---
 

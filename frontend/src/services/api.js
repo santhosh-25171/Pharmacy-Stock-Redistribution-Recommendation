@@ -18,12 +18,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Intercept auth errors
+// Intercept auth errors (401 Unauthorized) to trigger graceful redirect to login
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Don't auto redirect if already on login or checking me
+      // Do not trigger unauthorized event for login attempts themselves
+      const isLoginRequest = error.config && error.config.url && error.config.url.includes('/api/auth/login');
+      if (!isLoginRequest && typeof window !== 'undefined') {
+        localStorage.removeItem('pharmacy_token');
+        window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+      }
     }
     return Promise.reject(error);
   }

@@ -1,27 +1,36 @@
 import React, { useState } from 'react';
-import { Sliders, RefreshCw, Shield, Database, CheckCircle2, AlertTriangle, Key } from 'lucide-react';
+import { Sliders, RefreshCw, Shield, Database, CheckCircle2, AlertTriangle, Key, ShieldAlert } from 'lucide-react';
 import { systemService } from '../services/api';
-import { DEMO_ACCOUNTS } from '../context/AuthContext';
+import { DEMO_ACCOUNTS, useAuth } from '../context/AuthContext';
 
 export const Settings = () => {
+  const { user, hasRole } = useAuth();
   const [valThreshold, setValThreshold] = useState(2000);
   const [qtyThreshold, setQtyThreshold] = useState(50);
   const [dteThreshold, setDteThreshold] = useState(14);
   const [isReseeding, setIsReseeding] = useState(false);
   const [reseedSuccess, setReseedSuccess] = useState(false);
+  const [reseedError, setReseedError] = useState(null);
 
   const handleReseed = async () => {
+    if (!hasRole(['ADMIN'])) {
+      alert('Access Denied: Database re-seeding requires the ADMIN role. Current account lacks permission.');
+      return;
+    }
     if (!window.confirm('Are you sure you want to reset the database and re-seed 5,000+ synthetic records?')) {
       return;
     }
     setIsReseeding(true);
     setReseedSuccess(false);
+    setReseedError(null);
     try {
       await systemService.reseed();
       setReseedSuccess(true);
       setTimeout(() => setReseedSuccess(false), 4000);
     } catch (err) {
-      alert('Failed to reseed database.');
+      const msg = err.response?.data?.detail || 'Failed to reseed database.';
+      setReseedError(msg);
+      alert(`Re-seeding failed: ${msg}`);
     } finally {
       setIsReseeding(false);
     }

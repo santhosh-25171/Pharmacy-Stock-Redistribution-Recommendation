@@ -11,11 +11,12 @@ import {
   Settings,
   Flame,
   CheckCircle,
+  LogOut,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export const Sidebar = ({ currentTab, onSelectTab, counts = {} }) => {
-  const { user, hasRole } = useAuth();
+  const { user, hasRole, logout } = useAuth();
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, badge: null },
@@ -70,8 +71,8 @@ export const Sidebar = ({ currentTab, onSelectTab, counts = {} }) => {
         </nav>
       </div>
 
-      {/* User Scoping Card at Sidebar Bottom */}
-      <div className="p-4 border-t border-slate-900">
+      {/* User Scoping Card and Logout at Sidebar Bottom */}
+      <div className="p-4 border-t border-slate-900 space-y-2">
         <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
           <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Current Scope</div>
           <div className="font-semibold text-white mt-0.5 truncate">
@@ -82,7 +83,17 @@ export const Sidebar = ({ currentTab, onSelectTab, counts = {} }) => {
             <span>Role: {user?.role}</span>
           </div>
         </div>
+
+        <button
+          onClick={logout}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-900/50 hover:bg-rose-500/10 border border-slate-800 hover:border-rose-500/30 text-xs text-slate-400 hover:text-rose-300 transition-all font-medium"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          <span>Sign Out</span>
+        </button>
       </div>
     </aside>
   );
 };
+
+export default Sidebar;

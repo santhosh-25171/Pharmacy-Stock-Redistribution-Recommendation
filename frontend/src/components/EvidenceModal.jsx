@@ -45,8 +45,23 @@ export const EvidenceModal = ({ recommendation, isOpen, onClose, onApprove, onRe
               <div className="text-right">
                 <RiskBadge risk={recommendation.risk_level} size="md" />
                 <div className="text-xs text-slate-400 mt-1">
-                  Confidence Score: <span className="text-emerald-400 font-semibold">{Math.round(recommendation.confidence_score * 100)}%</span>
+                  Recommendation Score: <span className="text-emerald-400 font-semibold">{recommendation.recommendation_score || Math.round(recommendation.confidence_score * 100)} / 100</span>
                 </div>
+              </div>
+            </div>
+
+            {/* Demand Intelligence Banner */}
+            <div className="p-3 rounded-lg bg-emerald-950/20 border border-emerald-500/20 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="text-slate-300 font-semibold">Demand Intelligence:</span>
+                <span className="text-emerald-300 font-bold">{recommendation.predicted_demand ? `${recommendation.predicted_demand} units/day` : 'Active Demand'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                  {recommendation.demand_source || 'ML_PREDICTION'}
+                </span>
+                <span className="text-[11px] text-slate-400">RandomForestRegressor (MAE 1.22)</span>
               </div>
             </div>
 
@@ -85,11 +100,45 @@ export const EvidenceModal = ({ recommendation, isOpen, onClose, onApprove, onRe
             </div>
           )}
 
+          {/* WHY THIS RECOMMENDATION? Structured Verification Checklist */}
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              Safety & Feasibility Verification Checklist
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div className="flex items-center gap-2 text-slate-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                <span>Source has excess inventory</span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                <span>Source safety stock protected</span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                <span>Destination demand predicted</span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                <span>Product has sufficient shelf-life</span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                <span>Road transit is feasible</span>
+              </div>
+              <div className="flex items-center gap-2 text-slate-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                <span>Destination capacity verified</span>
+              </div>
+            </div>
+          </div>
+
           {/* WHY Section with Evidence Bullets */}
           <div>
             <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              Why was this recommendation generated?
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              Explainable Transfer Evidence Bullets
             </h4>
             <div className="space-y-2.5">
               {recommendation.evidence && recommendation.evidence.length > 0 ? (

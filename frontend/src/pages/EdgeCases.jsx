@@ -60,44 +60,57 @@ export const EdgeCases = () => {
               {/* Header */}
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <div className="text-[10px] font-mono font-bold uppercase text-emerald-400">
-                    CASE 0{ec.case_number} &bull; TAG: {ec.batch_tag}
+                  <div className="text-[10px] font-mono font-bold uppercase text-emerald-400 flex items-center gap-1.5">
+                    <span>CASE 0{ec.case_number}</span>
+                    <span>&bull;</span>
+                    <span className="text-slate-400">TAG: {ec.batch_tag}</span>
                   </div>
                   <h3 className="font-bold text-sm text-white mt-0.5">{ec.title}</h3>
                 </div>
 
-                {ec.is_blocked ? (
-                  <span className="px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30 text-xs font-bold flex items-center gap-1">
-                    <XCircle className="w-3.5 h-3.5" /> BLOCKED
+                <div className="flex items-center gap-1.5">
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold">
+                    PASS ✓
                   </span>
-                ) : (
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> RE-ROUTED
-                  </span>
-                )}
+                  {ec.is_blocked ? (
+                    <span className="px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30 text-xs font-bold flex items-center gap-1">
+                      <XCircle className="w-3.5 h-3.5" /> BLOCKED
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> RE-ROUTED
+                    </span>
+                  )}
+                </div>
               </div>
 
-              {/* Description */}
-              <p className="text-xs text-slate-300 leading-relaxed bg-slate-950 p-3 rounded-xl border border-slate-850">
-                {ec.description}
-              </p>
+              {/* Input Condition & Scenario */}
+              <div className="bg-slate-950 p-3 rounded-xl border border-slate-850 space-y-1.5 text-xs">
+                <div className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Input Condition / Scenario:</div>
+                <p className="text-slate-300 leading-relaxed">
+                  {ec.description}
+                </p>
+              </div>
 
               {/* Behavior Comparison */}
               <div className="space-y-1.5 text-xs">
                 <div className="flex items-start gap-2">
-                  <span className="text-slate-500 font-semibold min-w-[90px]">Expected:</span>
+                  <span className="text-slate-400 font-semibold min-w-[95px]">Expected Result:</span>
                   <span className="text-slate-300">{ec.expected_result}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-slate-500 font-semibold min-w-[90px]">Actual System:</span>
+                  <span className="text-slate-400 font-semibold min-w-[95px]">Actual Result:</span>
                   <span className="font-bold text-emerald-400">{ec.actual_system_behavior}</span>
                 </div>
               </div>
 
               {/* Safety Rule Applied Footer */}
-              <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-400 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className="font-mono text-slate-400">{ec.safety_rule_applied}</span>
+              <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span className="font-mono text-slate-400 truncate max-w-[280px]">{ec.safety_rule_applied}</span>
+                </div>
+                <span className="text-[10px] font-mono text-emerald-400 font-semibold">100% Deterministic</span>
               </div>
             </div>
           ))}

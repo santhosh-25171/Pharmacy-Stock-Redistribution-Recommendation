@@ -111,7 +111,10 @@ class TransferRecommendation(Base):
     estimated_transit_days = Column(Integer, nullable=False)
     
     risk_level = Column(String(50), nullable=False) # CRITICAL, HIGH, MEDIUM, LOW
-    confidence_score = Column(Float, nullable=False, default=0.85)
+    confidence_score = Column(Float, nullable=False, default=0.85) # Preserved for backward compatibility
+    recommendation_score = Column(Float, nullable=True) # Normalized 0-100 explainable ranking score
+    predicted_demand = Column(Float, nullable=True) # ML predicted destination demand
+    demand_source = Column(String(50), default="ML_PREDICTION") # ML_PREDICTION, STORED_FORECAST, HEURISTIC_FALLBACK
     status = Column(String(50), nullable=False, default="PENDING") # PENDING, APPROVED, REJECTED, OVERRIDDEN, COMPLETED, CANCELLED
     is_high_impact = Column(Boolean, default=False)
     

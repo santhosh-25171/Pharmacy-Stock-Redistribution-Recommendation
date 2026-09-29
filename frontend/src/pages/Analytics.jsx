@@ -207,7 +207,7 @@ export const Analytics = () => {
             <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
               <span className="text-slate-400">Overall Acceptance Rate</span>
               <div className="text-lg font-bold text-emerald-400 mt-1">{summary.overall_acceptance_rate_pct || '0'}%</div>
-              <span className="text-[10px] text-slate-500">Human-confirmed transfers</span>
+              <span className="text-[10px] text-slate-500">Simulation-based acceptance behavior</span>
             </div>
             <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
               <span className="text-slate-400">Avg Transfer Distance</span>

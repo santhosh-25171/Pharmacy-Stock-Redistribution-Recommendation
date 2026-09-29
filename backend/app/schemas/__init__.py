@@ -124,7 +124,10 @@ class RecommendationOut(BaseModel):
     distance_km: float
     estimated_transit_days: int
     risk_level: str
-    confidence_score: float
+    confidence_score: float # Preserved for backward compatibility
+    recommendation_score: Optional[float] = None
+    predicted_demand: Optional[float] = None
+    demand_source: Optional[str] = "ML_PREDICTION"
     status: str
     is_high_impact: bool
     created_at: datetime
@@ -222,3 +225,15 @@ class EdgeCaseOut(BaseModel):
     actual_system_behavior: str
     safety_rule_applied: str
     is_blocked: bool
+
+# --- System Health Schema ---
+class SystemHealthOut(BaseModel):
+    status: str
+    service: str
+    database: str
+    api: str
+    ml_model: Dict[str, Any]
+    recommender: Dict[str, Any]
+    audit_service: str
+    reference_date: Dict[str, Any]
+    timestamp: str

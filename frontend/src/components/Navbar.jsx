@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Activity, User, ChevronDown, Check, Building2, Lock, HelpCircle } from 'lucide-react';
+import { Shield, Activity, User, ChevronDown, Check, Building2, Lock, HelpCircle, LogOut } from 'lucide-react';
 import { useAuth, DEMO_ACCOUNTS } from '../context/AuthContext';
 import { systemService } from '../services/api';
 
@@ -27,6 +27,11 @@ export const Navbar = ({ onOpenPrivacy }) => {
     await loginAsDemo(email);
   };
 
+  const handleLogout = () => {
+    setDropdownOpen(false);
+    logout();
+  };
+
   return (
     <header className="h-16 border-b border-slate-800 bg-slate-900/90 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-40">
       {/* Brand & Prototype Label */}
@@ -51,7 +56,7 @@ export const Navbar = ({ onOpenPrivacy }) => {
         <span>100% Synthetic Operational Data &bull; Zero Real Patient PII</span>
       </div>
 
-      {/* Right Controls: Health & Demo Role Switcher */}
+      {/* Right Controls: Health & Demo Role Switcher & Logout */}
       <div className="flex items-center gap-3">
         {/* System Health Badge */}
         <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs">
@@ -78,7 +83,7 @@ export const Navbar = ({ onOpenPrivacy }) => {
           </button>
 
           {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-750 rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150 border border-slate-700">
+            <div className="absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
               <div className="px-3 py-2 border-b border-slate-800 text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
                 Switch Demo Persona / Role
               </div>
@@ -102,18 +107,36 @@ export const Navbar = ({ onOpenPrivacy }) => {
                   );
                 })}
               </div>
-              <div className="border-t border-slate-800 pt-1 px-2">
+              <div className="border-t border-slate-800 pt-1 px-2 space-y-1">
                 <button
                   onClick={() => { setDropdownOpen(false); if (onOpenPrivacy) onOpenPrivacy(); }}
                   className="w-full px-2 py-1.5 text-left text-xs text-slate-400 hover:text-slate-200 rounded flex items-center gap-2"
                 >
                   <Lock className="w-3.5 h-3.5" /> Privacy & Consent Policy
                 </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full px-2 py-1.5 text-left text-xs text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded flex items-center gap-2 transition-colors font-medium"
+                >
+                  <LogOut className="w-3.5 h-3.5" /> Sign Out
+                </button>
               </div>
             </div>
           )}
         </div>
+
+        {/* Visible Direct Logout Button */}
+        <button
+          onClick={handleLogout}
+          title="Sign out of PharmaShift"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-rose-500/15 border border-slate-800 hover:border-rose-500/30 text-xs text-slate-400 hover:text-rose-300 transition-all font-medium"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Sign Out</span>
+        </button>
       </div>
     </header>
   );
 };
+
+export default Navbar;

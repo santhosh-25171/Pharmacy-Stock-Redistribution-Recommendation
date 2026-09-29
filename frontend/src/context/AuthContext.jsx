@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authService } from '../services/api';
 
 const AuthContext = createContext();
@@ -16,6 +16,13 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const logout = useCallback(() => {
+    localStorage.removeItem('pharmacy_token');
+    setToken('');
+    setUser(null);
+    setError(null);
+  }, []);
+
   useEffect(() => {
     const initAuth = async () => {
       const storedToken = localStorage.getItem('pharmacy_token');
@@ -23,19 +30,31 @@ export const AuthProvider = ({ children }) => {
         try {
           const userData = await authService.getCurrentUser();
           setUser(userData);
+          setToken(storedToken);
         } catch (err) {
-          console.warn('[Auth] Token expired or invalid, logging in as default Admin');
-          await loginAsDemo('admin@pharmacy.io');
+          console.warn('[Auth] Stored token is invalid or expired. Session cleared.');
+          logout();
         }
       } else {
-        // Automatically login as Admin by default for immediate demo readiness
-        await loginAsDemo('admin@pharmacy.io');
+        setUser(null);
+        setToken('');
       }
       setLoading(false);
     };
 
     initAuth();
-  }, []);
+
+    // Listen for custom unauthorized events dispatched by API interceptors
+    const handleUnauthorized = () => {
+      console.warn('[Auth] Unauthorized 401 response detected. Redirecting to Login.');
+      logout();
+    };
+
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('auth:unauthorized', handleUnauthorized);
+    };
+  }, [logout]);
 
   const login = async (email, password) => {
     setError(null);
@@ -46,7 +65,7 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       return data.user;
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Authentication failed';
+      const msg = err.response?.data?.detail || err.message || 'Authentication failed. Please verify your credentials.';
       setError(msg);
       throw new Error(msg);
     }
@@ -57,12 +76,6 @@ export const AuthProvider = ({ children }) => {
       ? 'Admin@123'
       : (email.startsWith('manager') ? 'Manager@123' : 'Pharmacist@123');
     return login(email, defaultPassword);
-  };
-
-  const logout = () => {
-    localStorage.removeItem('pharmacy_token');
-    setToken('');
-    setUser(null);
   };
 
   const hasRole = (allowedRoles) => {
@@ -90,3 +103,5 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+
+export default AuthContext;

@@ -3,34 +3,71 @@ Risk Scoring and Expiry Analysis Module.
 Calculates Days-to-Expiry (DTE), estimated local consumption, excess stock, and risk category.
 """
 
-from datetime import datetime
-from typing import Dict, Any, Tuple
+import os
+from datetime import datetime, timezone
+from typing import Dict, Any, Tuple, Optional
 
-REFERENCE_DATE = datetime(2026, 8, 14)
+# Default deterministic reference date for synthetic benchmark evaluations
+DEFAULT_REFERENCE_DATE_STR = "2026-08-14"
 
-def parse_expiry_date(expiry_date_str: str) -> Tuple[bool, int, datetime]:
+def get_reference_date() -> datetime:
     """
-    Parses expiry date string.
-    Returns: (is_valid, days_to_expiry, parsed_datetime)
+    Returns the active reference date for expiry calculation.
+    
+    Why: Synthetic datasets are generated around a benchmark reference epoch (2026-08-14).
+    Allowing DEMO_REFERENCE_DATE environment variable configuration enables reproducible
+    evaluation runs while simultaneously supporting live calendar dates in production.
+    """
+    ref_env = os.getenv("DEMO_REFERENCE_DATE", DEFAULT_REFERENCE_DATE_STR).strip()
+    if ref_env.upper() in ["CURRENT", "CURRENT_DATE", "LIVE"]:
+        now = datetime.now(timezone.utc)
+        return datetime(now.year, now.month, now.day)
+    try:
+        return datetime.strptime(ref_env, "%Y-%m-%d")
+    except Exception:
+        return datetime(2026, 8, 14)
+
+def get_reference_date_info() -> Dict[str, Any]:
+    """Exposes reference date metadata for health monitoring and UI display."""
+    ref_env = os.getenv("DEMO_REFERENCE_DATE", DEFAULT_REFERENCE_DATE_STR).strip()
+    is_live = ref_env.upper() in ["CURRENT", "CURRENT_DATE", "LIVE"]
+    ref_dt = get_reference_date()
+    return {
+        "reference_date": ref_dt.strftime("%Y-%m-%d"),
+        "mode": "LIVE_CURRENT" if is_live else "FIXED_DEMO",
+        "description": "Live calendar date" if is_live else "Deterministic synthetic benchmark reference date"
+    }
+
+REFERENCE_DATE = get_reference_date()
+
+def parse_expiry_date(expiry_date_str: str, reference_date: Optional[datetime] = None) -> Tuple[bool, int, datetime]:
+    """
+    Parses expiry date string and computes integer days remaining (DTE).
+    
+    Why: Defensive string parsing prevents format errors (e.g., malformed legacy barcodes
+    or corrupted CSV rows) from terminating the batch recommendation engine.
     """
     if not expiry_date_str or expiry_date_str == "INVALID_DATE":
         return False, -999, None
     try:
         dt = datetime.strptime(expiry_date_str.strip(), "%Y-%m-%d")
-        dte = (dt - REFERENCE_DATE).days
+        ref_dt = reference_date or get_reference_date()
+        dte = (dt - ref_dt).days
         return True, dte, dt
     except Exception:
         return False, -999, None
 
 def calculate_risk_level(days_to_expiry: int, is_valid_date: bool = True) -> str:
     """
-    Categorizes risk based on remaining days to expiry:
-    - Invalid date: CRITICAL (Safety block)
-    - <= 0 days: EXPIRED
-    - 1 to 7 days: CRITICAL
-    - 8 to 30 days: HIGH
-    - 31 to 60 days: MEDIUM
-    - > 60 days: LOW
+    Categorizes clinical risk based on remaining days to expiry:
+    
+    Why these clinical brackets:
+    - Invalid date -> CRITICAL: Unknown shelf-life is treated with maximum caution.
+    - <= 0 days -> EXPIRED: Requires immediate biological waste removal.
+    - 1 to 7 days -> CRITICAL: Urgent intervention window; immediate transfer or dispensing.
+    - 8 to 30 days -> HIGH: Primary target window for inter-branch redistribution.
+    - 31 to 60 days -> MEDIUM: Monitored for proactive velocity matching.
+    - > 60 days -> LOW: Routine inventory under standard FIFO.
     """
     if not is_valid_date:
         return "CRITICAL"
@@ -53,10 +90,16 @@ def analyze_batch_risk(
     safety_stock_days: int = 3
 ) -> Dict[str, Any]:
     """
-    Comprehensive risk and consumption profile for an inventory batch.
+    Generates comprehensive risk and consumption profile for an inventory batch.
+    
+    Why: Before any redistribution recommendation is made, the engine must distinguish
+    between 'total stock' and 'excess stock'. If a branch has 10 units but dispenses 2 units/day
+    with 10 days to expiry, all 10 will be consumed locally. Only stock exceeding projected
+    local consumption plus a mandatory safety buffer constitutes redistributable excess.
     """
     is_valid, dte, _ = parse_expiry_date(expiry_date_str)
     
+    # Handle corrupted or unparseable expiry dates safely
     if not is_valid:
         return {
             "is_valid_date": False,
@@ -72,6 +115,7 @@ def analyze_batch_risk(
             "recommended_action": "QUARANTINE_INVALID_DATE"
         }
 
+    # Handle already expired stock safely
     if dte <= 0:
         return {
             "is_valid_date": True,
@@ -89,36 +133,40 @@ def analyze_batch_risk(
 
     risk_level = calculate_risk_level(dte, True)
     safe_daily_demand = max(0.1, daily_demand)
+    
+    # Protect the source pharmacy's safety-stock requirement
+    # before calculating the quantity available for transfer.
     safety_stock_required = int(safe_daily_demand * safety_stock_days)
     
-    # Days needed to consume current stock at current local velocity
+    # Days needed to consume current stock at current local dispensing velocity
     days_to_consume = round(quantity / safe_daily_demand, 1)
     
-    # How much will reasonably be consumed before the expiry date
+    # Projected units consumed locally before the expiry cutoff
     consumable_before_expiry = int(safe_daily_demand * dte)
     
-    # Excess quantity = stock that will expire unconsumed if kept locally
+    # Excess quantity: Only stock that will expire unconsumed if kept locally
+    # minus the reserved safety buffer is marked for transfer.
     excess_quantity = max(0, quantity - consumable_before_expiry - safety_stock_required)
     
     total_val = round(quantity * unit_price, 2)
     at_risk_val = round(min(quantity, max(0, quantity - consumable_before_expiry)) * unit_price, 2)
 
-    # Action suggestion
+    # Action suggestion based on clinical risk and excess availability
     if excess_quantity > 5 and dte > 3:
         recommended_action = "REDISTRIBUTE_EXCESS"
     elif risk_level in ["CRITICAL", "HIGH"] and excess_quantity > 0:
         recommended_action = "EXPEDITE_LOCAL_DISPENSING"
-    elif risk_level == "LOW":
-        recommended_action = "NORMAL_STOCK"
+    elif risk_level == "EXPIRED":
+        recommended_action = "DISPOSE_EXPIRED_BATCH"
     else:
-        recommended_action = "MONITOR_DEMAND"
+        recommended_action = "RETAIN_LOCAL_STOCK"
 
     return {
         "is_valid_date": True,
         "days_to_expiry": dte,
         "risk_level": risk_level,
-        "stock_status": "NEAR_EXPIRY" if dte <= 30 else "AVAILABLE",
-        "daily_demand": daily_demand,
+        "stock_status": "EXPIRED" if dte <= 0 else ("NEAR_EXPIRY" if dte <= 30 else "AVAILABLE"),
+        "daily_demand": round(daily_demand, 2),
         "days_to_consume": days_to_consume,
         "excess_quantity": excess_quantity,
         "safety_stock_required": safety_stock_required,

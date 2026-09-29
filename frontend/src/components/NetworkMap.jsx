@@ -25,6 +25,24 @@ export const NetworkMap = ({ pharmacies = [], recommendations = [], onSelectPhar
     };
   });
 
+  // Calculate inbound and outbound flows for node balance classification
+  const outboundCounts = {};
+  const inboundCounts = {};
+  recommendations.forEach((r) => {
+    outboundCounts[r.source_pharmacy_id] = (outboundCounts[r.source_pharmacy_id] || 0) + 1;
+    inboundCounts[r.destination_pharmacy_id] = (inboundCounts[r.destination_pharmacy_id] || 0) + 1;
+  });
+
+  const getBalanceState = (pId, status) => {
+    if (status === 'CLOSED') return { label: 'Closed Node', color: 'bg-rose-500/20 text-rose-400 border-rose-500/30' };
+    const outCount = outboundCounts[pId] || 0;
+    const inCount = inboundCounts[pId] || 0;
+    if (outCount > 30) return { label: 'High Expiry Exposure', color: 'bg-rose-500/20 text-rose-300 border-rose-500/30' };
+    if (outCount > 15) return { label: 'Excess Stock (Donor)', color: 'bg-amber-500/20 text-amber-300 border-amber-500/30' };
+    if (inCount > 15) return { label: 'Shortage / High Demand', color: 'bg-blue-500/20 text-blue-300 border-blue-500/30' };
+    return { label: 'Balanced Stock', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' };
+  };
+
   // Top pending recommendations to render as transfer vectors
   const activeVectors = recommendations.slice(0, 15);
 
@@ -34,16 +52,20 @@ export const NetworkMap = ({ pharmacies = [], recommendations = [], onSelectPhar
       <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-30 pointer-events-none"></div>
 
       {/* Map Legend */}
-      <div className="absolute top-4 left-4 z-10 p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs backdrop-blur-sm space-y-1.5 shadow-lg">
+      <div className="absolute top-4 left-4 z-10 p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs backdrop-blur-sm space-y-2 shadow-lg max-w-xs">
         <div className="font-bold text-white flex items-center gap-1.5">
           <MapPin className="w-3.5 h-3.5 text-emerald-400" />
           <span>Bengaluru Pharmacy Mesh</span>
         </div>
-        <div className="flex items-center gap-3 text-[11px] text-slate-300">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Active</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Maint</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Closed</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-emerald-400"></span> Transfer Vector</span>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] text-slate-300">
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Balanced Stock</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Excess Stock</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Shortage / Demand</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Expiry Exposure</span>
+        </div>
+        <div className="text-[10px] text-slate-400 border-t border-slate-800 pt-1 flex items-center gap-2">
+          <span className="w-3 h-0.5 bg-emerald-400"></span>
+          <span>Redistribution Vector</span>
         </div>
       </div>
 
@@ -130,22 +152,37 @@ export const NetworkMap = ({ pharmacies = [], recommendations = [], onSelectPhar
       </svg>
 
       {/* Hover Info Card */}
-      {hoveredNode && pharmacyCoords[hoveredNode] && (
-        <div className="absolute bottom-4 right-4 z-10 p-3.5 rounded-xl bg-slate-900 border border-slate-700 text-xs backdrop-blur-md shadow-xl w-64 animate-in fade-in zoom-in-95 duration-100">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] font-mono text-emerald-400 font-bold">{hoveredNode}</span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
-              {pharmacyCoords[hoveredNode].data.operating_status}
-            </span>
+      {hoveredNode && pharmacyCoords[hoveredNode] && (() => {
+        const bal = getBalanceState(hoveredNode, pharmacyCoords[hoveredNode].data.operating_status);
+        return (
+          <div className="absolute bottom-4 right-4 z-10 p-3.5 rounded-xl bg-slate-900 border border-slate-700 text-xs backdrop-blur-md shadow-xl w-72 animate-in fade-in zoom-in-95 duration-100 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono text-emerald-400 font-bold">{hoveredNode}</span>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${bal.color}`}>
+                {bal.label}
+              </span>
+            </div>
+            <div>
+              <div className="font-bold text-white truncate">{pharmacyCoords[hoveredNode].data.pharmacy_name}</div>
+              <div className="text-slate-400 text-[11px] mt-0.5">{pharmacyCoords[hoveredNode].data.city}</div>
+            </div>
+            <div className="pt-2 border-t border-slate-800 grid grid-cols-2 gap-2 text-[11px]">
+              <div>
+                <span className="text-slate-500">Outbound Recs:</span>
+                <div className="text-amber-400 font-mono font-bold">{outboundCounts[hoveredNode] || 0} batches</div>
+              </div>
+              <div>
+                <span className="text-slate-500">Inbound Recs:</span>
+                <div className="text-blue-400 font-mono font-bold">{inboundCounts[hoveredNode] || 0} batches</div>
+              </div>
+            </div>
+            <div className="pt-1.5 border-t border-slate-850 flex justify-between text-[11px]">
+              <span className="text-slate-400">Storage Capacity:</span>
+              <span className="text-white font-mono">{pharmacyCoords[hoveredNode].data.storage_capacity.toLocaleString()} units</span>
+            </div>
           </div>
-          <div className="font-bold text-white truncate">{pharmacyCoords[hoveredNode].data.pharmacy_name}</div>
-          <div className="text-slate-400 text-[11px] mt-0.5">{pharmacyCoords[hoveredNode].data.city}</div>
-          <div className="mt-2 pt-2 border-t border-slate-800 flex justify-between text-[11px]">
-            <span className="text-slate-400">Capacity:</span>
-            <span className="text-white font-mono">{pharmacyCoords[hoveredNode].data.storage_capacity.toLocaleString()} units</span>
-          </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };

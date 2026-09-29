@@ -17,7 +17,8 @@ from sqlalchemy.orm import Session
 from backend.app.database.session import Base, engine, SessionLocal
 from backend.app.models import (
     User, Pharmacy, Medicine, InventoryBatch, DemandForecast,
-    TransferRecommendation, RecommendationEvidence, AuditLog
+    TransferRecommendation, RecommendationEvidence, AuditLog,
+    TransferAction, OverrideReason
 )
 from backend.app.utils.security import get_password_hash
 from backend.app.recommender.engine import generate_recommendations_for_db
@@ -93,6 +94,16 @@ def seed_database_if_empty(db: Session = None, force_reseed: bool = False):
         if pharmacy_count > 0 and not force_reseed:
             print("[INFO] Database already seeded with records.")
             return
+
+        if force_reseed:
+            print("[*] Force reseed requested: Clearing operational tables...")
+            db.query(RecommendationEvidence).delete()
+            db.query(TransferAction).delete()
+            db.query(OverrideReason).delete()
+            db.query(TransferRecommendation).delete()
+            db.query(InventoryBatch).delete()
+            db.query(DemandForecast).delete()
+            db.commit()
 
         print("[*] Seeding database from synthetic CSV files...")
 

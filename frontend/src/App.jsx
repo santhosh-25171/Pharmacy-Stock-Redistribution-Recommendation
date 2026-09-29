@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
+import { Login } from './pages/Login';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Dashboard } from './pages/Dashboard';
 import { Inventory } from './pages/Inventory';
 import { Recommendations } from './pages/Recommendations';
@@ -14,7 +16,7 @@ import { Settings } from './pages/Settings';
 import { recommendationService, inventoryService } from './services/api';
 
 const AppContent = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [currentTab, setCurrentTab] = useState('dashboard');
   const [counts, setCounts] = useState({ pendingRecs: null, inventoryCount: null });
 
@@ -39,28 +41,83 @@ const AppContent = () => {
     }
   }, [user, currentTab]);
 
+  // Loading state while verifying stored session token
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 gap-3">
+        <div className="w-9 h-9 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs font-semibold tracking-wide text-slate-300">Initializing PharmaShift session...</p>
+      </div>
+    );
+  }
+
+  // CRITICAL REQUIREMENT: If not authenticated, render Login Page exclusively
+  if (!user) {
+    return <Login />;
+  }
+
   const renderActivePage = () => {
     switch (currentTab) {
       case 'dashboard':
-        return <Dashboard onNavigate={(tab) => setCurrentTab(tab)} />;
+        return (
+          <ErrorBoundary sectionName="Dashboard">
+            <Dashboard onNavigate={(tab) => setCurrentTab(tab)} />
+          </ErrorBoundary>
+        );
       case 'inventory':
-        return <Inventory />;
+        return (
+          <ErrorBoundary sectionName="Inventory Monitor">
+            <Inventory />
+          </ErrorBoundary>
+        );
       case 'recommendations':
-        return <Recommendations />;
+        return (
+          <ErrorBoundary sectionName="Transfer Recommendations">
+            <Recommendations />
+          </ErrorBoundary>
+        );
       case 'pharmacies':
-        return <Pharmacies />;
+        return (
+          <ErrorBoundary sectionName="Pharmacy Network">
+            <Pharmacies />
+          </ErrorBoundary>
+        );
       case 'analytics':
-        return <Analytics />;
+        return (
+          <ErrorBoundary sectionName="Analytics & Simulation Benchmarks">
+            <Analytics />
+          </ErrorBoundary>
+        );
       case 'edgecases':
-        return <EdgeCases />;
+        return (
+          <ErrorBoundary sectionName="Edge Cases Sandbox">
+            <EdgeCases />
+          </ErrorBoundary>
+        );
       case 'audit':
-        return <AuditLogs />;
+        return (
+          <ErrorBoundary sectionName="Audit Trail">
+            <AuditLogs />
+          </ErrorBoundary>
+        );
       case 'privacy':
-        return <Privacy />;
+        return (
+          <ErrorBoundary sectionName="Privacy & Consent">
+            <Privacy />
+          </ErrorBoundary>
+        );
       case 'settings':
-        return <Settings />;
+        return (
+          <ErrorBoundary sectionName="Settings">
+            <Settings />
+          </ErrorBoundary>
+        );
       default:
-        return <Dashboard onNavigate={(tab) => setCurrentTab(tab)} />;
+        return (
+          <ErrorBoundary sectionName="Dashboard">
+            <Dashboard onNavigate={(tab) => setCurrentTab(tab)} />
+          </ErrorBoundary>
+        );
     }
   };
 
